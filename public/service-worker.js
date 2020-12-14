@@ -49,7 +49,7 @@ self.addEventListener("fetch", function(evt) {
      // handle runtime GET requests for data from /api routes
     if (evt.request.url.includes("/api/")){
       evt.respondWith(
-        caches.open(DATA_CACHE_NAME).then(cache => {
+        caches.open(STATIC_CACHE).then(cache => {
           return fetch(evt.request)
             .then(response => {
                // make network request and fallback to cache if network request fails (offline)
@@ -66,16 +66,4 @@ self.addEventListener("fetch", function(evt) {
         }).catch(err => console.log(err))
       );
     };
-     // use cache first for all other requests for performance
-     evt.respondWith(
-        fetch(evt.request).catch(() => {
-           return caches.match(evt.request).then(response => {
-             if(response){
-               return response;
-             }else if(evt.request.headers.get("accept").includes("text/html")){
-               return caches.match("/");
-             }
-           });
-         })
-       );
    });
